@@ -103,7 +103,7 @@ scripts/
 ├─ localize-win.bat / localize-mac.sh # 跨平台命令行脚本辅助入口
 └─ prepare-icon.cjs             # 从 icon.png 生成打包图标
 
-根目录的 `启动汉化_Win.bat`、`取消汉化_Win.bat`、`启动汉化_Mac.sh`、`取消汉化_Mac.sh` 调用同一服务层；`.github/workflows/release.yml` 按标签自动构建并发布。
+根目录的 `启动汉化_Win.bat`、`取消汉化_Win.bat`、`启动汉化_Mac.sh`、`取消汉化_Mac.sh` 调用同一服务层；`.github/workflows/release.yml` 当前按标签自动构建并发布 Windows 安装包。
 ```
 
 `tests/` 按模块命名：`transaction.test.ts`、`patches.test.ts`、`service.test.ts` 验证激活/恢复；`runtime.test.ts`、`settings.test.ts`、`coverage.test.ts`、`resources.test.ts` 验证翻译、保护范围及资源组装；`platform.test.ts`、`tray.test.ts`、`tray-live.test.ts`、`app-icon.test.ts`、`updates.test.ts` 验证平台与更新。`fixture.ts` 创建临时安装夹具，`source-cleanup.test.ts` 检查资源与外部引用约束。本机托盘适配检查为可选测试。
@@ -166,4 +166,4 @@ npm run dist:mac
 
 应用内“检查更新”指向本项目公开仓库 `klierbyck/cursor-zh-en`。Windows 已安装包可检查正式 Release，自动下载后由用户确认重启安装；未签名 macOS 包只检查版本，发现新版时打开 GitHub Release 让用户手动下载 DMG，绝不尝试静默替换。汉化写入/恢复期间禁止安装更新；开发模式不下载更新。客户端不内置 Token。
 
-在 `package.json` 中递增版本并同步更新锁文件，然后提交并推送匹配的标签（例如 `v1.0.0`）。`.github/workflows/release.yml` 在 GitHub 的 Windows/macOS runner 上运行验证、构建，全部成功才创建正式 Release；上传 Windows EXE、macOS x64/arm64 DMG 和 ZIP、对应更新清单和 blockmap。GitHub 自动在 Release 的 Assets 中提供 **Source code (zip)** 和 **Source code (tar.gz)**，不需要手动打包源码。首次发布须确保仓库 Actions 允许写入 Releases；构建期间不要手工提前建立相同的 Release。
+在 `package.json` 中递增版本并同步更新锁文件，然后提交并推送匹配的标签（例如 `v1.0.0`）。`.github/workflows/release.yml` 当前只在 GitHub Windows runner 上运行验证与构建；成功后创建正式 Release，上传 Windows EXE、`.blockmap` 和 `latest.yml`。macOS 安装包暂不发布。GitHub 自动在 Release 的 Assets 中提供 **Source code (zip)** 和 **Source code (tar.gz)**，不需要手动打包源码。首次发布须确保仓库 Actions 允许写入 Releases；构建期间不要手工提前建立相同的 Release。

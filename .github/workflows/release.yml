@@ -30,30 +30,9 @@ jobs:
             release/latest.yml
           if-no-files-found: error
 
-  macos:
-    runs-on: macos-15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-      - run: npm ci
-      - run: npm run verify
-      - run: npm run dist:mac
-      - uses: actions/upload-artifact@v4
-        with:
-          name: macos-installers
-          path: |
-            release/*.dmg
-            release/*.zip
-            release/*.blockmap
-            release/latest-mac.yml
-          if-no-files-found: error
-
   publish:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [windows, macos]
+    needs: [windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -66,20 +45,17 @@ jobs:
           test "$GITHUB_REF_NAME" = "$expected" || { echo "Tag must be $expected" >&2; exit 1; }
       - uses: actions/download-artifact@v4
         with:
-          pattern: '*-installers'
+          name: windows-installers
           path: release
-          merge-multiple: true
       - name: Check all release assets exist
         shell: bash
         run: |
           test -f release/latest.yml
-          test -f release/latest-mac.yml
-          test "$(compgen -G 'release/*.dmg' | wc -l)" -eq 2
-          test "$(compgen -G 'release/*.zip' | wc -l)" -eq 2
           test "$(compgen -G 'release/*.exe' | wc -l)" -eq 1
+          test "$(compgen -G 'release/*.blockmap' | wc -l)" -eq 1
       - name: Publish installation files and update manifests
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          gh release create "$GITHUB_REF_NAME" release/*.exe release/*.dmg release/*.zip release/*.blockmap release/latest.yml release/latest-mac.yml --verify-tag --title "Cursor 汉化助手 $GITHUB_REF_NAME" --notes "Windows x64 和 macOS Intel / Apple Silicon 安装包。macOS 包尚未签名，汉化写入仍待真机验收；源码 ZIP/TAR 由 GitHub 自动附加。"
+          gh release create "$GITHUB_REF_NAME" release/*.exe release/*.blockmap release/latest.yml --verify-tag --title "Cursor 汉化助手 $GITHUB_REF_NAME" --notes "Windows x64 安装包；本次不提供 macOS 安装包。源码 ZIP/TAR 由 GitHub 自动附加。"
