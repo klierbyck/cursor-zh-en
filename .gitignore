@@ -1,0 +1,9 @@
+node_modules/
+out/
+release/
+release-clean/
+coverage/
+*.log
+.env
+.env.*
+!.env.example

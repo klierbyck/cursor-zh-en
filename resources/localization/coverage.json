@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "catalogSha256": "85e081a703f4545329217bce06e44f522317e0e5179aa44aca27a7924006977a",
+  "runtimeSha256": "54ea38e4c146631d4aee6e86814baefeaf757079448f4dea44664f3ad3e850b9",
+  "counts": {
+    "core": 2598,
+    "notices": 179,
+    "entries": 2631,
+    "patterns": 239,
+    "fragments": 86,
+    "dropdown": 332,
+    "settingsMcp": 8,
+    "settingsDomains": 8,
+    "pluginNames": 31,
+    "skillNames": 8,
+    "nameStems": 36,
+    "marketLabels": 35,
+    "marketFragments": 15,
+    "marketPatterns": 2,
+    "marketDescriptions": 103
+  },
+  "guardedWrites": 41,
+  "trackedEventHooks": 12
+}

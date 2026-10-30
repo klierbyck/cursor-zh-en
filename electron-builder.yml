@@ -1,0 +1,39 @@
+appId: com.cursorzh.toggle
+productName: Cursor 汉化助手
+artifactName: CursorZh-${version}-${os}-${arch}.${ext}
+directories:
+  output: release
+files:
+  - out/**/*
+  - package.json
+extraResources:
+  - from: resources
+    to: resources
+  - from: src/renderer/icon.png
+    to: icon.png
+asar: true
+npmRebuild: false
+win:
+  icon: out/app-icon.ico
+  target:
+    - target: nsis
+      arch: [x64]
+  requestedExecutionLevel: asInvoker
+  executableName: CursorZh
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+  createDesktopShortcut: true
+mac:
+  icon: out/icon.png
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  category: public.app-category.developer-tools
+  hardenedRuntime: true
+  entitlements: resources/entitlements.mac.plist
+  entitlementsInherit: resources/entitlements.mac.plist
+  notarize: true
+  minimumSystemVersion: '13.0'

@@ -1,0 +1,18 @@
+{
+  "anysphere.cursor-always-local": {
+    "displayName": "Cursor 本地功能",
+    "description": "Cursor 的本地功能。"
+  },
+  "anysphere.cursor-retrieval": {
+    "displayName": "Cursor 检索",
+    "description": "Cursor 的索引与检索功能。"
+  },
+  "anysphere.cursor-shadow-workspace": {
+    "displayName": "Cursor 影子工作区",
+    "description": "供智能体准备改动的独立工作区。"
+  },
+  "inspecta.inspecta-ide-integration": {
+    "displayName": "Inspecta IDE 集成",
+    "description": "Inspecta CSS 检查器与 Cursor 的集成。"
+  }
+}

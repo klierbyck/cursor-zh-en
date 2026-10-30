@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach Electron Main",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "address": "127.0.0.1",
+      "restart": true,
+      "timeout": 30000,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Attach Electron Renderer",
+      "type": "pwa-chrome",
+      "request": "attach",
+      "port": 9222,
+      "address": "127.0.0.1",
+      "webRoot": "${workspaceFolder}",
+      "timeout": 30000
+    }
+  ]
+}

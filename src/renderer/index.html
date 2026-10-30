@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <title>Cursor 汉化助手</title>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand"><img class="brand-mark" src="./icon.png" alt="" /><span>CURSOR / 中文</span></div>
+      <div class="header-actions"><span class="app-version" id="app-version">—</span><button class="text-button" id="check-update" type="button" title="检查助手更新">检查更新</button></div>
+    </header>
+
+    <section class="intro">
+      <p class="eyebrow">少一点翻译，多一点专注。</p>
+      <h1>让 Cursor，<br />说中文<span class="punctuation">。</span></h1>
+    </section>
+
+    <section class="control-card" aria-label="汉化控制">
+      <div class="status-row">
+        <span class="version" id="version">正在检测 Cursor</span>
+        <button class="icon-button" id="refresh" type="button" title="刷新 Cursor 状态" aria-label="刷新 Cursor 状态"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 7a7 7 0 0 1 11.6-1L20 9M4 15l2.3 3A7 7 0 0 0 17.9 17"/></svg></button>
+      </div>
+      <button id="toggle" type="button" disabled>
+        <span id="button-label">激活 Cursor 汉化</span>
+      </button>
+      <div class="progress-track" id="progress-track" hidden><div id="progress-fill"></div></div>
+      <p class="message" id="message" role="status" aria-live="polite">正在检测 Cursor，只读检查安装与恢复资料</p>
+      <p class="warnings" id="warnings" hidden></p>
+    </section>
+
+    <section class="metadata" aria-label="环境信息">
+      <div><span class="meta-label">运行环境</span><span id="platform">正在识别</span></div>
+      <div><span class="meta-label">安装位置</span><span class="path" id="installation" title="">自动检测</span></div>
+      <div id="backup-row" hidden><span class="meta-label">恢复资料</span><span class="path" id="backup"></span></div>
+    </section>
+
+    <p class="update-message" id="update-message" role="status" aria-live="polite" hidden></p>
+    <footer><span class="footer-line"></span><span>本地处理 · 不上传项目内容</span></footer>
+  </main>
+  <script type="module" src="/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "macActivationVerified": false,
+  "macActivationReason": "当前版本尚未完成 Mac Intel / Apple Silicon 的应用签名与真机回退验收，已安全禁用对 Cursor.app 的写入。",
+  "windows": [
+    {
+      "commit": "69b724ebc67ec522c1b5d287a5025f7a7e81be90",
+      "version": "3.27.14",
+      "vscodeVersion": "1.128.0",
+      "validation": "resource-inspected; fixture-tested; live-activation-not-tested"
+    }
+  ],
+  "allowStructurallyCompatibleWindowsBuilds": false
+}

@@ -1,0 +1,50 @@
+{
+  "name": "cursor-zh-en",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cursor汉化助手，一键将 Cursor 界面汉化为简体中文。自动安装，可一键还原，汉化覆盖通用、智能体、语音、代码只能、插件市场等界面，支持 Windows / macOS。",
+  "author": "klierbyck",
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "dev:debug": "cross-env CURSORZH_DEVTOOLS=1 electron-vite dev --inspect=9229 --remoteDebuggingPort=9222 --sourcemap",
+    "dev:break": "cross-env CURSORZH_DEVTOOLS=1 electron-vite dev --inspectBrk=9229 --remoteDebuggingPort=9222 --sourcemap",
+    "start": "electron .",
+    "preview": "electron-vite preview",
+    "smoke": "npm run build && electron . --smoke-test",
+    "smoke:dev": "cross-env CURSORZH_SMOKE_TEST=1 electron-vite dev",
+    "build": "npm run localization:check && npm run typecheck && electron-vite build && electron scripts/prepare-icon.cjs",
+    "localization:check": "node scripts/localization-resources.mjs",
+    "localization:seal": "node scripts/localization-resources.mjs --seal",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run localization:check && npm run typecheck && npm test",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dist:win": "npm run build && node scripts/build-release.mjs --win",
+    "dist:mac:intel": "npm run build && node scripts/build-release.mjs --mac --x64",
+    "dist:mac:arm": "npm run build && node scripts/build-release.mjs --mac --arm64",
+    "dist:mac": "npm run build && node scripts/build-release.mjs --mac --both",
+    "cli:localize": "tsx src/cli.ts",
+    "pack": "npm run build && electron-builder --dir"
+  },
+  "dependencies": {
+    "acorn": "^8.19.0",
+    "electron-updater": "^6.8.11",
+    "fflate": "^0.8.3",
+    "jsonc-parser": "^3.3.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^30.0.0",
+    "@types/node": "^26.6.6",
+    "cross-env": "^10.1.0",
+    "electron": "^45.1.0",
+    "electron-builder": "^26.18.0",
+    "electron-vite": "^6.0.0",
+    "jsdom": "^30.1.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  }
+}
