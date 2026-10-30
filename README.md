@@ -172,4 +172,4 @@ npm run dist:mac
 
 应用内“检查更新”指向本项目公开仓库 `klierbyck/cursor-zh-en`。Windows 已安装包可检查正式 Release，下载后由用户确认重启安装；macOS 发现新版时打开 Release 页面供手动下载。汉化写入/恢复期间禁止安装更新。
 
-发布前运行 `npm run release`，它会自动递增补丁版本并同步修改 `package.json` 与 `package-lock.json`。将两个文件一起提交、推送到 `master` 后，`.github/workflows/release.yml` 才会自动构建 Windows/macOS 安装包并创建标签与 Release；提供 EXE、Intel / Apple Silicon 的 DMG 与 ZIP、更新清单，以及 GitHub 自动生成的源码 ZIP/TAR。未修改版本的普通提交不会发布；手动运行工作流只构建、不发布。
+发布前运行 `npm run release`，它会自动递增补丁版本并同步修改 `package.json` 与 `package-lock.json`。将两个文件一起提交、推送到 `master` 后，`.github/workflows/release.yml` 才会自动构建 Windows/macOS 安装包并创建标签与 Release；提供 EXE、Intel / Apple Silicon 的 DMG 与 ZIP、更新清单，以及 GitHub 自动生成的源码 ZIP/TAR。未修改版本的普通提交不会发布；手动运行工作流默认只构建，选择 `publish` 可重试尚未发布的当前版本。
