@@ -1,16 +1,49 @@
 name: Build and publish release
 
 on:
-  workflow_dispatch:
   push:
-    tags:
-      - 'v*'
+    branches: [master]
+    paths: [package.json]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+      tag: ${{ steps.check.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check version and lockfile
+        id: check
+        shell: bash
+        run: |
+          version=$(jq -r .version package.json)
+          locked=$(jq -r .version package-lock.json)
+          test "$version" = "$locked" || { echo 'package-lock.json version differs' >&2; exit 1; }
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Use a stable X.Y.Z version' >&2; exit 1; }
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          changed=false
+          if [[ "$GITHUB_EVENT_NAME" == push ]]; then
+            previous=$(git show "${{ github.event.before }}:package.json" | jq -r .version)
+            if [[ "$version" != "$previous" ]]; then
+              if git show-ref --verify --quiet "refs/tags/v$version"; then
+                echo "Tag v$version already exists" >&2
+                exit 1
+              fi
+              changed=true
+            fi
+          fi
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+
   windows:
+    needs: [version]
+    if: needs.version.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,32 +65,54 @@ jobs:
             release/latest.yml
           if-no-files-found: error
 
+  macos:
+    needs: [version]
+    if: needs.version.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run verify
+      - run: npm run dist:mac
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-installers
+          path: |
+            release/*.dmg
+            release/*.zip
+            release/*.blockmap
+            release/latest-mac.yml
+          if-no-files-found: error
+
   publish:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [windows]
+    needs: [version, windows, macos]
+    if: needs.version.outputs.changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Check tag matches application version
-        shell: bash
-        run: |
-          expected="v$(node -p 'require("./package.json").version')"
-          test "$GITHUB_REF_NAME" = "$expected" || { echo "Tag must be $expected" >&2; exit 1; }
       - uses: actions/download-artifact@v4
         with:
-          name: windows-installers
+          pattern: '*-installers'
           path: release
+          merge-multiple: true
       - name: Check all release assets exist
         shell: bash
         run: |
           test -f release/latest.yml
+          test -f release/latest-mac.yml
           test "$(compgen -G 'release/*.exe' | wc -l)" -eq 1
-          test "$(compgen -G 'release/*.blockmap' | wc -l)" -eq 1
-      - name: Publish installation files and update manifests
+          test "$(compgen -G 'release/*.dmg' | wc -l)" -eq 2
+          test "$(compgen -G 'release/*.zip' | wc -l)" -eq 2
+          test "$(compgen -G 'release/*.blockmap' | wc -l)" -ge 1
+      - name: Publish version and installation files
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}
         shell: bash
         run: |
-          gh release create "$GITHUB_REF_NAME" release/*.exe release/*.blockmap release/latest.yml --verify-tag --title "Cursor 汉化助手 $GITHUB_REF_NAME" --notes "Windows x64 安装包；本次不提供 macOS 安装包。源码 ZIP/TAR 由 GitHub 自动附加。"
+          gh release create "$TAG" release/*.exe release/*.dmg release/*.zip release/*.blockmap release/latest.yml release/latest-mac.yml --target "$GITHUB_SHA" --title "Cursor 汉化助手 $TAG" --notes "Windows x64、macOS Intel 和 Apple Silicon 安装包；源码 ZIP/TAR 由 GitHub 自动附加。"

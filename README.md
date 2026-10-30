@@ -103,7 +103,7 @@ scripts/
 ├─ localize-win.bat / localize-mac.sh # 跨平台命令行脚本辅助入口
 └─ prepare-icon.cjs             # 从 icon.png 生成打包图标
 
-根目录的 `启动汉化_Win.bat`、`取消汉化_Win.bat`、`启动汉化_Mac.sh`、`取消汉化_Mac.sh` 调用同一服务层；`.github/workflows/release.yml` 当前按标签自动构建并发布 Windows 安装包。
+根目录的 `启动汉化_Win.bat`、`取消汉化_Win.bat`、`启动汉化_Mac.sh`、`取消汉化_Mac.sh` 调用同一服务层；`.github/workflows/release.yml` 在版本更新时构建并发布 Windows/macOS 安装包。
 ```
 
 `tests/` 按模块命名：`transaction.test.ts`、`patches.test.ts`、`service.test.ts` 验证激活/恢复；`runtime.test.ts`、`settings.test.ts`、`coverage.test.ts`、`resources.test.ts` 验证翻译、保护范围及资源组装；`platform.test.ts`、`tray.test.ts`、`tray-live.test.ts`、`app-icon.test.ts`、`updates.test.ts` 验证平台与更新。`fixture.ts` 创建临时安装夹具，`source-cleanup.test.ts` 检查资源与外部引用约束。本机托盘适配检查为可选测试。
@@ -155,15 +155,13 @@ npm run pack            # 当前平台的目录包，不生成安装程序
 
 Windows 安装包默认为 `release/CursorZh-<版本>-win-x64.exe`。打包前关闭从目标输出目录运行的助手，避免文件占用。如需独立输出目录，先在 PowerShell 设置 `$env:CURSORZH_OUTPUT='release-clean'`，再执行 `npm run dist:win`。
 
-macOS 测试包必须在 Mac 上构建；一次生成 Intel 和 Apple Silicon 两种 DMG、ZIP 及 `latest-mac.yml`：
+在 Mac 上本地构建时，一次生成 Intel 和 Apple Silicon 两种 DMG、ZIP 及 `latest-mac.yml`：
 
 ```bash
 npm run dist:mac
 # 单独构建也可用 npm run dist:mac:intel 或 npm run dist:mac:arm
 ```
 
-当前 Windows 包未签名，macOS 测试包不启用签名/公证。macOS 首次安装可能需要系统手动允许打开，**不要关闭 Gatekeeper 或删除隔离属性**；正式发行应配置开发者签名和公证。打包成功不等同于 macOS 汉化和恢复验收通过。
+应用内“检查更新”指向本项目公开仓库 `klierbyck/cursor-zh-en`。Windows 已安装包可检查正式 Release，下载后由用户确认重启安装；macOS 发现新版时打开 Release 页面供手动下载。汉化写入/恢复期间禁止安装更新。
 
-应用内“检查更新”指向本项目公开仓库 `klierbyck/cursor-zh-en`。Windows 已安装包可检查正式 Release，自动下载后由用户确认重启安装；未签名 macOS 包只检查版本，发现新版时打开 GitHub Release 让用户手动下载 DMG，绝不尝试静默替换。汉化写入/恢复期间禁止安装更新；开发模式不下载更新。客户端不内置 Token。
-
-在 `package.json` 中递增版本并同步更新锁文件，然后提交并推送匹配的标签（例如 `v1.0.0`）。`.github/workflows/release.yml` 当前只在 GitHub Windows runner 上运行验证与构建；成功后创建正式 Release，上传 Windows EXE、`.blockmap` 和 `latest.yml`。macOS 安装包暂不发布。GitHub 自动在 Release 的 Assets 中提供 **Source code (zip)** 和 **Source code (tar.gz)**，不需要手动打包源码。首次发布须确保仓库 Actions 允许写入 Releases；构建期间不要手工提前建立相同的 Release。
+发布时递增 `package.json` 版本并同步锁文件（例如 `npm version patch --no-git-tag-version`），提交后推送到 `master` 即可。`.github/workflows/release.yml` 检测到版本变化后自动运行 Windows 与 macOS 构建，全部成功才创建版本标签和 Release；提供 EXE、Intel / Apple Silicon 的 DMG 与 ZIP、更新清单，以及 GitHub 自动生成的源码 ZIP/TAR。未修改版本的普通提交不会发布；手动运行工作流只构建、不发布。
