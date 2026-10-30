@@ -3,7 +3,7 @@ name: Build and publish release
 on:
   push:
     branches: [master]
-    paths: [package.json]
+    paths: [package.json, package-lock.json]
   workflow_dispatch:
     inputs:
       publish:
@@ -36,7 +36,7 @@ jobs:
           changed=false
           if [[ "$GITHUB_EVENT_NAME" == push ]]; then
             previous=$(git show "${{ github.event.before }}:package.json" | jq -r .version)
-            if [[ "$version" != "$previous" ]]; then changed=true; fi
+            if [[ "$version" != "$previous" ]] || ! git show-ref --verify --quiet "refs/tags/v$version"; then changed=true; fi
           elif [[ "${{ inputs.publish }}" == true ]]; then
             changed=true
           fi
@@ -64,10 +64,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: windows-installers
-          path: |
-            release/*.exe
-            release/*.blockmap
-            release/latest.yml
+          path: release/*.exe
           if-no-files-found: error
 
   macos:
@@ -86,11 +83,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: macos-installers
-          path: |
-            release/*.dmg
-            release/*.zip
-            release/*.blockmap
-            release/latest-mac.yml
+          path: release/*.dmg
           if-no-files-found: error
 
   publish:
@@ -99,20 +92,17 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           pattern: '*-installers'
           path: release
           merge-multiple: true
-      - name: Check all release assets exist
+      - name: Create combined update manifest and verify assets
+        env:
+          VERSION: ${{ needs.version.outputs.tag }}
+        run: node scripts/create-release-manifest.mjs "${VERSION#v}" release
         shell: bash
-        run: |
-          test -f release/latest.yml
-          test -f release/latest-mac.yml
-          test "$(compgen -G 'release/*.exe' | wc -l)" -eq 1
-          test "$(compgen -G 'release/*.dmg' | wc -l)" -eq 2
-          test "$(compgen -G 'release/*.zip' | wc -l)" -eq 2
-          test "$(compgen -G 'release/*.blockmap' | wc -l)" -ge 1
       - name: Publish version and installation files
         if: needs.version.outputs.changed == 'true'
         env:
@@ -120,4 +110,4 @@ jobs:
           TAG: ${{ needs.version.outputs.tag }}
         shell: bash
         run: |
-          gh release create "$TAG" release/*.exe release/*.dmg release/*.zip release/*.blockmap release/latest.yml release/latest-mac.yml --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Cursor 汉化助手 $TAG" --notes "Windows x64、macOS Intel 和 Apple Silicon 安装包；源码 ZIP/TAR 由 GitHub 自动附加。"
+          gh release create "$TAG" release/*.exe release/*.dmg release/latest.yml --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Cursor 汉化助手 $TAG" --notes "Windows x64、macOS Intel 和 Apple Silicon 安装包；源码 ZIP/TAR 由 GitHub 自动附加。"

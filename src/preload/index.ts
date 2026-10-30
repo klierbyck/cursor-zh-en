@@ -7,7 +7,7 @@ const api: CursorZhApi = {
   refresh: () => ipcRenderer.invoke(CHANNEL.refresh),
   updateState: () => ipcRenderer.invoke(CHANNEL.updateState),
   checkUpdates: () => ipcRenderer.invoke(CHANNEL.checkUpdates),
-  installUpdate: () => ipcRenderer.invoke(CHANNEL.installUpdate),
+  openUpdateRelease: () => ipcRenderer.invoke(CHANNEL.openUpdateRelease),
   onUpdateState: listener => {
     const handler = (_event: Electron.IpcRendererEvent, state: UpdateState): void => listener(state)
     ipcRenderer.on(CHANNEL.updateChanged, handler)

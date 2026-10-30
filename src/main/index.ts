@@ -4,8 +4,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { CHANNEL } from '../shared/types'
 import { LocalizationService, errorText } from './core/service'
 import { runSmokeTest } from './smoke'
-import { autoUpdater } from 'electron-updater'
-import { readUpdateConfig, UpdateController } from './core/updates'
+import { fetchLatestVersion, readUpdateConfig, UpdateController } from './core/updates'
 import { pngIconContainer } from './platform/app-icon'
 
 let window: BrowserWindow | undefined
@@ -72,12 +71,10 @@ else {
     })
     const updateConfig = await readUpdateConfig(resourcesRoot)
     updates = new UpdateController({
-      version: app.getVersion(), packaged: app.isPackaged, config: updateConfig, updater: autoUpdater,
+      version: app.getVersion(), packaged: app.isPackaged, config: updateConfig,
       emit: state => { if (window && !window.isDestroyed()) window.webContents.send(CHANNEL.updateChanged, state) },
       isBusy: () => Boolean(service?.isBusy),
-      confirmInstall: async () => (await dialog.showMessageBox(window!, { type: 'question', title: '安装助手更新', message: '更新已下载。现在重启助手并安装？不会重新启动或修改 Cursor。', buttons: ['重启并更新', '稍后'], defaultId: 0, cancelId: 1 })).response === 0,
-      beforeInstall: () => {},
-      manualInstall: process.platform === 'darwin',
+      getLatestVersion: () => fetchLatestVersion(updateConfig),
       openRelease: async () => { await shell.openExternal(`https://github.com/${updateConfig.githubOwner}/${updateConfig.githubRepo}/releases/latest`) }
     })
     const authorized = (event: Electron.IpcMainInvokeEvent, args: unknown[]): void => {
@@ -86,11 +83,11 @@ else {
       }
     }
     ipcMain.handle(CHANNEL.state, async (event, ...args) => { authorized(event, args); return service!.state })
-    ipcMain.handle(CHANNEL.toggle, async (event, ...args) => { authorized(event, args); return updates!.isInstalling ? service!.state : service!.toggle() })
-    ipcMain.handle(CHANNEL.refresh, async (event, ...args) => { authorized(event, args); return updates!.isInstalling ? service!.state : service!.rescan() })
+    ipcMain.handle(CHANNEL.toggle, async (event, ...args) => { authorized(event, args); return service!.toggle() })
+    ipcMain.handle(CHANNEL.refresh, async (event, ...args) => { authorized(event, args); return service!.rescan() })
     ipcMain.handle(CHANNEL.updateState, async (event, ...args) => { authorized(event, args); return updates!.state })
     ipcMain.handle(CHANNEL.checkUpdates, async (event, ...args) => { authorized(event, args); return updates!.check() })
-    ipcMain.handle(CHANNEL.installUpdate, async (event, ...args) => { authorized(event, args); return updates!.install() })
+    ipcMain.handle(CHANNEL.openUpdateRelease, async (event, ...args) => { authorized(event, args); return updates!.open() })
 
     if (process.env.ELECTRON_RENDERER_URL && !app.isPackaged) await window.loadURL(process.env.ELECTRON_RENDERER_URL)
     else await window.loadFile(join(__dirname, '../renderer/index.html'))

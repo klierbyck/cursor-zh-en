@@ -14,15 +14,14 @@ export interface ViewState {
   warnings: string[]
 }
 
-export type UpdateStatus = 'idle' | 'unconfigured' | 'development' | 'checking' | 'downloading' | 'available' | 'ready' | 'current' | 'error'
+export type UpdateStatus = 'idle' | 'unconfigured' | 'development' | 'checking' | 'available' | 'current' | 'error'
 export interface UpdateState {
   status: UpdateStatus
   currentVersion: string
   nextVersion?: string
-  progress: number
   message: string
   canCheck: boolean
-  canInstall: boolean
+  canOpenRelease: boolean
 }
 export interface CursorZhApi {
   state(): Promise<ViewState>
@@ -30,7 +29,7 @@ export interface CursorZhApi {
   refresh(): Promise<ViewState>
   updateState(): Promise<UpdateState>
   checkUpdates(): Promise<UpdateState>
-  installUpdate(): Promise<UpdateState>
+  openUpdateRelease(): Promise<UpdateState>
   onState(listener: (state: ViewState) => void): () => void
   onUpdateState(listener: (state: UpdateState) => void): () => void
 }
@@ -41,7 +40,7 @@ export const CHANNEL = {
   refresh: 'cursorzh:refresh',
   updateState: 'cursorzh:update-state',
   checkUpdates: 'cursorzh:check-updates',
-  installUpdate: 'cursorzh:install-update',
+  openUpdateRelease: 'cursorzh:open-update-release',
   updateChanged: 'cursorzh:update-changed',
   changed: 'cursorzh:changed'
 } as const

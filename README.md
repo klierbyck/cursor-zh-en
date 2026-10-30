@@ -75,7 +75,7 @@ src/
 │  │  ├─ transaction.ts         # 事务清单、备份、写入校验、回滚和恢复
 │  │  ├─ files.ts               # 哈希、安全路径、原子写入和文件元数据
 │  │  ├─ json.ts                # JSONC 解析、字段级修改及反向恢复
-│  │  ├─ updates.ts             # 助手更新检查、下载与确认安装
+│  │  ├─ updates.ts             # 检查统一发布清单并打开下载页面
 │  │  └─ cli.ts                 # 显式激活/恢复命令与状态验证
 │  ├─ patches/
 │  │  ├─ plan.ts                # 兼容性检查及工作台、语言配置等补丁规划
@@ -108,6 +108,7 @@ resources/
 scripts/
 ├─ localization-resources.mjs   # 检查翻译资源，维护校验值并阻止覆盖数量减少
 ├─ build-release.mjs            # 按平台构建安装包，不自动上传
+├─ create-release-manifest.mjs  # 汇总三种安装包为统一 latest.yml
 ├─ localize-win.bat / localize-mac.sh # 跨平台命令行脚本辅助入口
 └─ prepare-icon.cjs             # 从 icon.png 生成打包图标
 
@@ -163,13 +164,13 @@ npm run pack            # 当前平台的目录包，不生成安装程序
 
 Windows 安装包默认为 `release/CursorZh-<版本>-win-x64.exe`。打包前关闭从目标输出目录运行的助手，避免文件占用。如需独立输出目录，先在 PowerShell 设置 `$env:CURSORZH_OUTPUT='release-clean'`，再执行 `npm run dist:win`。
 
-在 Mac 上本地构建时，一次生成 Intel 和 Apple Silicon 两种 DMG、ZIP 及 `latest-mac.yml`：
+在 Mac 上本地构建时，一次生成 Intel 和 Apple Silicon 两种 DMG：
 
 ```bash
 npm run dist:mac
 # 单独构建也可用 npm run dist:mac:intel 或 npm run dist:mac:arm
 ```
 
-应用内“检查更新”指向本项目公开仓库 `klierbyck/cursor-zh-en`。Windows 已安装包可检查正式 Release，下载后由用户确认重启安装；macOS 发现新版时打开 Release 页面供手动下载。汉化写入/恢复期间禁止安装更新。
+应用内“检查更新”读取本项目 Release 的统一 `latest.yml`；发现新版后在 Windows/macOS 打开 Release 页面，由用户手动下载安装。汉化写入/恢复期间不会打开更新页面。
 
-发布前运行 `npm run release`，它会自动递增补丁版本并同步修改 `package.json` 与 `package-lock.json`。将两个文件一起提交、推送到 `master` 后，`.github/workflows/release.yml` 才会自动构建 Windows/macOS 安装包并创建标签与 Release；提供 EXE、Intel / Apple Silicon 的 DMG 与 ZIP、更新清单，以及 GitHub 自动生成的源码 ZIP/TAR。未修改版本的普通提交不会发布；手动运行工作流默认只构建，选择 `publish` 可重试尚未发布的当前版本。
+发布前运行 `npm run release`，它会自动递增补丁版本并同步修改 `package.json` 与 `package-lock.json`。将两个文件一起提交、推送到 `master` 后，`.github/workflows/release.yml` 才会自动构建 Windows/macOS 安装包并创建标签与 Release；仅上传 Windows EXE、Intel / Apple Silicon DMG 和合并两端信息的 `latest.yml`；源码 ZIP/TAR 由 GitHub 自动生成。未修改版本的普通提交不会发布；手动运行工作流默认只构建，选择 `publish` 可重试尚未发布的当前版本。

@@ -15,13 +15,11 @@ function renderUpdate(next?: UpdateState): void {
   if (next) updateState = next
   if (!updateState) return
   element('app-version').textContent = `v${updateState.currentVersion}`
-  update.textContent = updateState.status === 'ready' ? '重启并更新'
-    : updateState.status === 'available' ? '前往下载更新'
-    : updateState.status === 'checking' ? '检查中…'
-    : updateState.status === 'downloading' ? `下载 ${Math.round(updateState.progress)}%` : '检查更新'
-  update.disabled = refreshing || state?.status === 'busy' || state?.status === 'scanning' || (!updateState.canCheck && !updateState.canInstall)
-  update.title = updateState.status === 'ready' ? `安装 v${updateState.nextVersion}` : updateState.status === 'available' ? '在 GitHub Release 下载 macOS 安装包' : '检查助手更新'
-  if (['downloading', 'available', 'ready', 'error'].includes(updateState.status)) showUpdateMessage = true
+  update.textContent = updateState.status === 'available' ? '前往下载更新'
+    : updateState.status === 'checking' ? '检查中…' : '检查更新'
+  update.disabled = refreshing || state?.status === 'busy' || state?.status === 'scanning' || (!updateState.canCheck && !updateState.canOpenRelease)
+  update.title = updateState.status === 'available' ? '在 GitHub Release 下载安装包' : '检查助手更新'
+  if (['available', 'error'].includes(updateState.status)) showUpdateMessage = true
   element('update-message').hidden = !showUpdateMessage
   element('update-message').textContent = updateState.message
 }
@@ -76,7 +74,7 @@ update.addEventListener('click', async () => {
   if (update.disabled) return
   showUpdateMessage = true
   update.disabled = true
-  try { renderUpdate(await (updateState?.canInstall ? window.cursorZh.installUpdate() : window.cursorZh.checkUpdates())) } catch {
+  try { renderUpdate(await (updateState?.canOpenRelease ? window.cursorZh.openUpdateRelease() : window.cursorZh.checkUpdates())) } catch {
     element('update-message').hidden = false
     element('update-message').textContent = '更新操作未完成，请稍后重试。'
     renderUpdate()

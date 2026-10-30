@@ -22,7 +22,9 @@ it('keeps project docs and first-party code free of unrelated reference links', 
   const functionalHosts = new Set(['localhost', '127.0.0.1', 'cursor.com', 'translate.googleapis.com', 'marketplace.visualstudio.com', 'cursorzh.test'])
   // The updater opens this project's own Release page; do not permit arbitrary GitHub links.
   const ownRelease = /^src[\\/]main[\\/]index\.ts https:\/\/github\.com\/\$\{updateConfig\.githubOwner\}\/\$\{updateConfig\.githubRepo\}\/releases\/latest$/
-  expect(found.filter(entry => !functionalHosts.has(entry.match(/https?:\/\/([^/:]+)/)?.[1] || '') && !ownRelease.test(entry))).toEqual([])
+  const ownManifest = /^src[\\/]main[\\/]core[\\/]updates\.ts https:\/\/github\.com\/\$\{config\.githubOwner\}\/\$\{config\.githubRepo\}\/releases\/latest\/download\/latest\.yml$/
+  const manifestTest = /^tests[\\/]updates\.test\.ts https:\/\/github\.com\/klierbyck\/cursor-zh-en\/releases\/latest\/download\/latest\.yml$/
+  expect(found.filter(entry => !functionalHosts.has(entry.match(/https?:\/\/([^/:]+)/)?.[1] || '') && ![ownRelease, ownManifest, manifestTest].some(pattern => pattern.test(entry)))).toEqual([])
   const removedDirectory = ['up', 'stream'].join('')
   expect(paths.some(path => path.toLowerCase().includes(removedDirectory))).toBe(false)
   await expect(access(join(process.cwd(), 'resources', removedDirectory))).rejects.toThrow()
