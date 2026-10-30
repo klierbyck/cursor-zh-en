@@ -90,7 +90,6 @@ jobs:
 
   publish:
     needs: [version, windows, macos]
-    if: needs.version.outputs.changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -110,6 +109,7 @@ jobs:
           test "$(compgen -G 'release/*.zip' | wc -l)" -eq 2
           test "$(compgen -G 'release/*.blockmap' | wc -l)" -ge 1
       - name: Publish version and installation files
+        if: needs.version.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.version.outputs.tag }}
