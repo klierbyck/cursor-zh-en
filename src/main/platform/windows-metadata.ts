@@ -17,5 +17,5 @@ export async function captureWindowsAcls(paths: string[]): Promise<Record<string
 
 export async function writeWindowsAcl(path: string, sddl?: string): Promise<void> {
   if (process.platform !== 'win32' || !sddl) return
-  await powershell(`$acl=Get-Acl -LiteralPath ${quote(path)}; $acl.SetSecurityDescriptorSddlForm(${quote(sddl)}, [System.Security.AccessControl.AccessControlSections]::Access); Set-Acl -LiteralPath ${quote(path)} -AclObject $acl`)
+  await powershell(`$acl=Get-Acl -LiteralPath ${quote(path)}; $expected=${quote(sddl)}; if($acl.GetSecurityDescriptorSddlForm([System.Security.AccessControl.AccessControlSections]::Access) -ne $expected) { $acl.SetSecurityDescriptorSddlForm($expected, [System.Security.AccessControl.AccessControlSections]::Access); Set-Acl -LiteralPath ${quote(path)} -AclObject $acl }`)
 }
