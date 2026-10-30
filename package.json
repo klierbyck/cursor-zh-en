@@ -1,6 +1,6 @@
 {
   "name": "cursor-zh-en",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Cursor汉化助手，一键将 Cursor 界面汉化为简体中文。自动安装，可一键还原，汉化覆盖通用、智能体、语音、代码只能、插件市场等界面，支持 Windows / macOS。",
   "author": "klierbyck",
