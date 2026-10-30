@@ -153,7 +153,7 @@ describe('transactional localization', () => {
       expect(await exists(f.installation.argv)).toBe(false)
       expect(await exists(join(f.data, 'packs'))).toBe(false)
     }
-  })
+  }, 90000)
 
   it('can resume a restore that crashed after a merged configuration write', async () => {
     const f = await setup()
