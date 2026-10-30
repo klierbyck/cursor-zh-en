@@ -7,6 +7,14 @@ Electron + TypeScript 桌面工具，支持激活和取消 Cursor 中文界面�
 - 检测文件冲突、Cursor 升级和未完成事务，不强制结束 Cursor，不覆盖冲突内容。
 - 当前使用 Windows x64；macOS 仅提供测试包，真机与签名恢复验收完成前禁用汉化写入。
 
+## 界面预览
+
+![界面截图 1](src/renderer/界面0.png)
+
+![界面截图 2](src/renderer/界面1.png)
+
+![界面截图 3](src/renderer/界面2.png)
+
 ## 使用
 
 1. 保存工作并完全退出 Cursor，包括托盘进程。
