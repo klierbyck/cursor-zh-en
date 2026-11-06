@@ -2,6 +2,19 @@
 
 Cursor 汉化助手是一个 Electron + TypeScript 桌面工具，用于激活和取消 Cursor 中文界面。激活前会保存备份，取消时恢复本工具写入的内容，操作完成后重启 Cursor 生效。
 
+<p align="center">
+  <a href="https://github.com/klierbyck/cursor-zh-en/releases/latest">
+    <img src="https://img.shields.io/github/v/release/klierbyck/cursor-zh-en?label=%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC" alt="最新版本">
+  </a>
+  <a href="https://github.com/klierbyck/cursor-zh-en/releases">
+    <img src="https://img.shields.io/github/downloads/klierbyck/cursor-zh-en/total?label=%E4%B8%8B%E8%BD%BD%E9%87%8F" alt="下载量">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF%E8%AF%81-MIT-yellow" alt="MIT 许可证">
+  </a>
+  <img src="https://img.shields.io/badge/%E5%B9%B3%E5%8F%B0-Windows%20%7C%20macOS%20%E6%B5%8B%E8%AF%95%E5%8C%85-blue" alt="平台：Windows；macOS">
+</p>
+
 ## 功能
 
 - 翻译设置、智能体、菜单、通知、浏览器提示、插件市场和托盘等界面。
@@ -86,3 +99,8 @@ npm run dist:mac
 ```
 
 打包文件输出到 `release/`。项目不需要执行 Git 操作即可运行、测试和打包。
+
+## ⚠️ 免责声明
+
+- 本项目是社区作品，**与 Cursor 官方无关**。“Cursor”是其所有者的商标。
+- 本工具会**修改你电脑上 Cursor 的安装文件**（修改前自动备份，可一键还原）。请自行评估使用风险，作者不对因使用本工具造成的任何损失负责。

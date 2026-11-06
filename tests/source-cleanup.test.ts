@@ -5,6 +5,7 @@ it('keeps project docs and first-party code free of unrelated reference links', 
   const readmeReferences = [
     /^README\.md https:\/\/github\.com\/klierbyck\/cursor-zh-en\/releases(?:\/latest)?$/,
     /^README\.md https:\/\/img\.shields\.io\/github\/(?:v\/release\/klierbyck\/cursor-zh-en|downloads\/klierbyck\/cursor-zh-en\/total|license\/klierbyck\/cursor-zh-en)\?label=(?:%[0-9A-Fa-f]{2})+$/,
+    /^README\.md https:\/\/img\.shields\.io\/badge\/%E8%AE%B8%E5%8F%AF%E8%AF%81-MIT-yellow$/,
     /^README\.md https:\/\/img\.shields\.io\/badge\/%E5%B9%B3%E5%8F%B0-Windows%20%7C%20macOS%20%E6%B5%8B%E8%AF%95%E5%8C%85-blue$/
   ]
   const paths: string[] = []
